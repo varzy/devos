@@ -5,4 +5,5 @@ docker run \
   -v /Users/zy/Developer/_Docker/nginx/conf.d:/etc/nginx/conf.d \
   -v /Users/zy/Developer/_Docker/nginx/html:/usr/share/nginx/html \
   -v /Users/zy/Developer/_Docker/nginx/logs:/var/log/nginx \
+  -p 6301:6301 \
   nginx
