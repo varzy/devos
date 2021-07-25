@@ -8,9 +8,8 @@ docker exec -it lc_mysql bash
 mysql -uroot -p
 
 # 添加外部访问权限
-use mysql;
-GRANT ALL ON *.* TO 'root'@'%';
-ALTER USER 'root'@'localhost' IDENTIFIED BY 'password' PASSWORD EXPIRE NEVER;
+USE mysql;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'pswd' WITH GRANT OPTION;
 ALTER USER 'root'@'%' IDENTIFIED WITH mysql_native_password BY 'pswd';
 FLUSH PRIVILEGES;
 ```
