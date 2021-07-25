@@ -1,6 +1,10 @@
+docker stop mysql
+
+docker rm mysql
+
 docker run \
-  --name lc_mysql \
   -d \
+  --name mysql \
   --restart=always \
   -p 3306:3306 \
   -e MYSQL_ROOT_PASSWORD="pswd" \

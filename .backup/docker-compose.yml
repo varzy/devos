@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - 80:80
+      - 6301:6301
+    volumes:
+      - ${DATA_PATH}/nginx/conf.d:/etc/nginx/conf.d
+      - ${DATA_PATH}/nginx/html:/usr/share/nginx/html
+      - ${DATA_PATH}/nginx/logs:/var/log/nginx
+    restart: "always"

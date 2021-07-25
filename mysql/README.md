@@ -4,7 +4,7 @@
 
 ```bash
 # 进入容器内的 mysql
-docker exec -it lc_mysql bash
+docker exec -it mysql bash
 mysql -uroot -p
 
 # 添加外部访问权限
@@ -17,7 +17,7 @@ FLUSH PRIVILEGES;
 ## 复制配置文件
 
 ```bash
-docker cp lc_mysql:/etc/mysql/my.cnf ./mysql/my.cnf
+docker cp mysql:/etc/mysql/my.cnf ./mysql/my.cnf
 ```
 
 ## 设置默认时区
