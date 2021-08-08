@@ -12,10 +12,23 @@ services:
       - "80:80"
       - "443:443"
       - "6301:6301"
+      - "6302:6302"
     volumes:
       - $PWD/nginx/conf.d:/etc/nginx/conf.d
       - $PWD/sites:/usr/share/nginx/html
+      - $PWD/nginx/ssl:/etc/nginx/ssl
       - ${DATA_PATH}/nginx/logs:/var/log/nginx
+
+  certbot:
+      build:
+        context: ./certbot
+      volumes_from:
+        - applications
+      volumes:
+        - ./data/certbot/certs/:/var/certs
+      environment:
+        - CN="fake.domain.com"
+        - EMAIL="fake.email@gmail.com"
 
   ### ============================================
   ### Databases
