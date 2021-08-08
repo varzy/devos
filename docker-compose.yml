@@ -1,6 +1,9 @@
 version: "3.8"
 
 services:
+  ### ============================================
+  ### Web Servers
+  ### ============================================
   nginx:
     container_name: nginx
     image: nginx:alpine
@@ -14,6 +17,9 @@ services:
       - $PWD/sites:/usr/share/nginx/html
       - ${DATA_PATH}/nginx/logs:/var/log/nginx
 
+  ### ============================================
+  ### Databases
+  ### ============================================
   mysql:
     container_name: mysql
     image: mysql:latest
@@ -37,6 +43,21 @@ services:
       - $PWD/redis/redis.conf:/etc/redis/redis.conf
       - ${DATA_PATH}/redis:/data
 
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    env_file:
+      - .env
+    volumes:
+      - ${DATA_PATH}/mongo/data:/data/db
+      - ${DATA_PATH}/mongo/config:/data/configdb
+
+  ### ============================================
+  ### Applications
+  ### ============================================
   wordpress:
     container_name: wordpress
     image: wordpress:latest
