@@ -10,8 +10,8 @@ services:
       - "443:443"
       - "6301:6301"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ${DATA_PATH}/nginx/html:/usr/share/nginx/html
+      - $PWD/nginx/conf.d:/etc/nginx/conf.d
+      - $PWD/sites:/usr/share/nginx/html
       - ${DATA_PATH}/nginx/logs:/var/log/nginx
 
   mysql:
@@ -23,8 +23,8 @@ services:
     env_file:
       - .env
     volumes:
-      - ./mysql/my.cnf:/etc/mysql/my.cnf
-      - mysql_data:/var/lib/mysql
+      - $PWD/mysql/my.cnf:/etc/mysql/my.cnf
+      - ${DATA_PATH}/mysql:/var/lib/mysql
 
   redis:
     container_name: redis
@@ -34,8 +34,8 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - ./redis/redis.conf:/etc/redis/redis.conf
-      - redis_data:/data
+      - $PWD/redis/redis.conf:/etc/redis/redis.conf
+      - ${DATA_PATH}/redis:/data
 
   wordpress:
     container_name: wordpress
@@ -48,12 +48,4 @@ services:
     env_file:
       .env
     volumes:
-      - wordpress_data:/var/www/html
-
-volumes:
-  mysql_data:
-    name: basic_mysql_data
-  redis_data:
-    name: basic_redis_data
-  wordpress_data:
-    name: basic_wordpress_data
+      - ${DATA_PATH}/wordpress:/var/www/html
