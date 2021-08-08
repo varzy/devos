@@ -4,6 +4,7 @@ services:
   nginx:
     container_name: nginx
     image: nginx:alpine
+    restart: "always"
     ports:
       - "80:80"
       - "443:443"
@@ -12,33 +13,47 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ${DATA_PATH}/nginx/html:/usr/share/nginx/html
       - ${DATA_PATH}/nginx/logs:/var/log/nginx
-    restart: "always"
 
   mysql:
     container_name: mysql
     image: mysql:latest
+    restart: "always"
     ports:
       - "3306:3306"
+    env_file:
+      - .env
     volumes:
       - ./mysql/my.cnf:/etc/mysql/my.cnf
       - mysql_data:/var/lib/mysql
-    env_file:
-      - .env
-    restart: "always"
 
   redis:
     container_name: redis
     image: redis:alpine
+    restart: "always"
+    command: redis-server /etc/redis/redis.conf
     ports:
       - "6379:6379"
     volumes:
       - ./redis/redis.conf:/etc/redis/redis.conf
       - redis_data:/data
+
+  wordpress:
+    container_name: wordpress
+    image: wordpress:latest
     restart: "always"
-    command: redis-server /etc/redis/redis.conf
+    depends_on:
+      - mysql
+    ports:
+      - "7001:80"
+    env_file:
+      .env
+    volumes:
+      - wordpress_data:/var/www/html
 
 volumes:
   mysql_data:
     name: basic_mysql_data
   redis_data:
     name: basic_redis_data
+  wordpress_data:
+    name: basic_wordpress_data
