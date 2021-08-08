@@ -11,7 +11,7 @@ http://test.lctest.com {
 }
 
 https://test.lctest.com {
-  root * /srv
+  root * /srv/test
   file_server
   tls internal
   log {
