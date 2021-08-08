@@ -11,24 +11,25 @@ services:
     ports:
       - "80:80"
       - "443:443"
-      - "6301:6301"
-      - "6302:6302"
     volumes:
-      - $PWD/nginx/conf.d:/etc/nginx/conf.d
-      - $PWD/sites:/usr/share/nginx/html
-      - $PWD/nginx/ssl:/etc/nginx/ssl
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ${SITES_PATH}:/usr/share/nginx/html
       - ${DATA_PATH}/nginx/logs:/var/log/nginx
 
-  certbot:
-      build:
-        context: ./certbot
-      volumes_from:
-        - applications
-      volumes:
-        - ./data/certbot/certs/:/var/certs
-      environment:
-        - CN="fake.domain.com"
-        - EMAIL="fake.email@gmail.com"
+  caddy:
+    container_name: caddy
+    image: caddy:alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ${SITES_PATH}:/srv
+      - ${DATA_PATH}/caddy/config:/config
+      - ${DATA_PATH}/caddy/data:/data
+      - ${DATA_PATH}/caddy/logs:/var/log/caddy
 
   ### ============================================
   ### Databases
@@ -42,7 +43,7 @@ services:
     env_file:
       - .env
     volumes:
-      - $PWD/mysql/my.cnf:/etc/mysql/my.cnf
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
       - ${DATA_PATH}/mysql:/var/lib/mysql
 
   redis:
@@ -53,7 +54,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - $PWD/redis/redis.conf:/etc/redis/redis.conf
+      - ./redis/redis.conf:/etc/redis/redis.conf
       - ${DATA_PATH}/redis:/data
 
   mongodb:
