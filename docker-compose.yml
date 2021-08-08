@@ -45,7 +45,7 @@ services:
 
   mongodb:
     container_name: mongodb
-    image: mongo
+    image: mongo:latest
     restart: always
     ports:
       - "27017:27017"
@@ -67,17 +67,22 @@ services:
     ports:
       - "7001:80"
     env_file:
-      .env
+      - .env
     volumes:
       - ${DATA_PATH}/wordpress:/var/www/html
 
   phpmyadmin:
     container_name: phpmyadmin
-    image: phpmyadmin
+    image: phpmyadmin:latest
     restart: always
-    depends_on:
-      - mysql
     ports:
       - "7002:80"
     env_file:
-      .env
+      - .env
+
+  adminer:
+    container_name: adminer
+    image: adminer:latest
+    restart: always
+    ports:
+      - "7003:8080"
