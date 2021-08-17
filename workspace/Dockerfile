@@ -32,7 +32,10 @@ RUN apt install -y curl git vim
 # OhMyZSH
 ########################################
 RUN apt install -y zsh
-RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" || true
+RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" -- \
+    -t gallois \
+    -p https://github.com/zsh-users/zsh-autosuggestions \
+    -p https://github.com/zsh-users/zsh-completions
 RUN ln -f /bin/zsh /bin/sh
 
 ########################################
@@ -40,22 +43,28 @@ RUN ln -f /bin/zsh /bin/sh
 ########################################
 ENV NPM_REGISTRY ${NPM_REGISTRY}
 ENV YARN_REGISTRY ${YARN_REGISTRY}
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash && \
+RUN \
+    # nvm
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash && \
     echo "" >> ~/.zshrc && \
     echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.zshrc && \
     echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" ' >> ~/.zshrc && \
     echo '[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" ' >> ~/.zshrc && \
     . ~/.zshrc && \
+    # node, npm
     nvm install node && \
     if [ ${NPM_REGISTRY} ]; then \
       npm config set registry ${NPM_REGISTRY} \
     ;fi && \
+    # yarn
     npm install -g yarn && \
     if [ ${YARN_REGISTRY} ]; then \
       yarn config set registry ${YARN_REGISTRY} \
     ;fi && \
     echo "" >> ~/.zshrc && \
-    echo 'export PATH="$HOME/.yarn/bin:$PATH"' >> ~/.zshrc
+    echo 'export PATH="$HOME/.yarn/bin:$PATH"' >> ~/.zshrc && \
+    # global packages
+    yarn global add @vue/cli
 
 ########################################
 # Final
@@ -65,5 +74,6 @@ RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     rm /var/log/lastlog /var/log/faillog
 
+EXPOSE 22 8000-8100
 WORKDIR /var/workspace
 ENTRYPOINT [ "/bin/zsh" ]
