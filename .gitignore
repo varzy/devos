@@ -1,8 +1,12 @@
 .DS_Store
 code
 data
-sites
 _code
 _data
-_sites
 .env
+
+# 保留一些演示页面
+_sites/*
+!_sites/index.html
+!_sites/test
+!_sites/50x.html

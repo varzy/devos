@@ -23,4 +23,19 @@ docker rm $(docker ps -aq)
 
 # 删除所有镜像
 docker rmi $(docker images -q)
+
+# 查看空间占用情况
+docker system df
+
+# 清理 docker 占用的磁盘空间
+docker system prune
+
+# 清理数据卷
+docker volume prune
+
+# 更加彻底地清理 docker 占用的磁盘空间，将删除未使用过的镜像
+docker system prune -a
+
+# 只清理编译缓存
+docker builder prune
 ```
