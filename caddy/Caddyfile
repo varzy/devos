@@ -6,15 +6,23 @@
   }
 }
 
-http://test.lctest.com {
+http://devos.com {
+  root * /srv
+  file_server
+  log {
+    output file /var/log/caddy/devos.com.log
+  }
+}
+
+http://test.devos.com {
   redir https://{host}{uri}
 }
 
-https://test.lctest.com {
+https://test.devos.com {
   root * /srv/test
   file_server
   tls internal
   log {
-    output file /var/log/caddy/test.lctest.com.log
+    output file /var/log/caddy/devos.com.log
   }
 }

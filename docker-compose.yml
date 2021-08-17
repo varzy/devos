@@ -1,12 +1,32 @@
 version: "3.8"
 
+networks:
+  frontend:
+  backend:
+
 services:
+  workspace:
+    container_name: workspace
+    build:
+      context: ./workspace
+    tty: true
+    volumes:
+      - ${CODE_PATH}:/var/workspace
+    ports:
+      - "2222:22"
+      - "7001:8080"
+      - "7002:8000"
+    networks:
+      - frontend
+      - backend
+
   ### ============================================
   ### Web Servers
   ### ============================================
   nginx:
     container_name: nginx
-    image: nginx:alpine
+    build:
+      context: ./nginx
     restart: always
     ports:
       - "80:80"
@@ -16,10 +36,14 @@ services:
       - ./nginx/ssl:/etc/nginx/ssl
       - ${SITES_PATH}:/usr/share/nginx/html
       - ${DATA_PATH}/nginx/logs:/var/log/nginx
+    networks:
+      - frontend
+      - backend
 
   caddy:
     container_name: caddy
-    image: caddy:alpine
+    build:
+      context: ./caddy
     restart: always
     ports:
       - "80:80"
@@ -30,73 +54,99 @@ services:
       - ${DATA_PATH}/caddy/config:/config
       - ${DATA_PATH}/caddy/data:/data
       - ${DATA_PATH}/caddy/logs:/var/log/caddy
+    networks:
+      - frontend
+      - backend
 
   ### ============================================
   ### Databases
   ### ============================================
   mysql:
     container_name: mysql
-    image: mysql:latest
+    build:
+      context: ./mysql
     restart: always
     ports:
       - "3306:3306"
-    env_file:
-      - .env
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - TZ=${TZ}
     volumes:
-      - ./mysql/my.cnf:/etc/mysql/my.cnf
       - ${DATA_PATH}/mysql:/var/lib/mysql
+    networks:
+      - backend
 
   redis:
     container_name: redis
-    image: redis:alpine
+    build:
+      context: ./redis
     restart: always
-    command: redis-server /etc/redis/redis.conf
     ports:
       - "6379:6379"
     volumes:
-      - ./redis/redis.conf:/etc/redis/redis.conf
       - ${DATA_PATH}/redis:/data
+    networks:
+      - backend
 
-  mongodb:
-    container_name: mongodb
-    image: mongo:latest
+  mongo:
+    container_name: mongo
+    build:
+      context: ./mongo
     restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     ports:
       - "27017:27017"
-    env_file:
-      - .env
     volumes:
       - ${DATA_PATH}/mongo/data:/data/db
       - ${DATA_PATH}/mongo/config:/data/configdb
+    networks:
+      - backend
 
   ### ============================================
   ### Applications
   ### ============================================
   wordpress:
     container_name: wordpress
-    image: wordpress:latest
+    build:
+      context: ./wordpress
     restart: always
     depends_on:
       - mysql
+    environment:
+      - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
+      - WORDPRESS_DB_USER=${WORDPRESS_DB_USER}
+      - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
+      - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME}
     ports:
-      - "7001:80"
-    env_file:
-      - .env
+      - "7101:80"
     volumes:
       - ${DATA_PATH}/wordpress:/var/www/html
+    networks:
+      - frontend
+      - backend
 
   phpmyadmin:
     container_name: phpmyadmin
-    image: phpmyadmin:latest
+    build:
+      context: ./phpmyadmin
     restart: always
+    environment:
+      - PMA_ARBITRARY=${PMA_ARBITRARY}
     ports:
-      - "7002:80"
-    env_file:
-      - .env
+      - "7102:80"
+    networks:
+      - frontend
+      - backend
 
   adminer:
     container_name: adminer
-    image: adminer:latest
+    build:
+      context: ./adminer
     restart: always
     ports:
-      - "7003:8080"
+      - "7103:8080"
+    networks:
+      - frontend
+      - backend
