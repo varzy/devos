@@ -144,30 +144,6 @@ services:
       - frontend
       - backend
 
-  phpmyadmin:
-    container_name: phpmyadmin
-    build:
-      context: ./phpmyadmin
-    restart: always
-    ports:
-      - "${PMA_PORT}:80"
-    environment:
-      - PMA_ARBITRARY=${PMA_ARBITRARY}
-    networks:
-      - frontend
-      - backend
-
-  adminer:
-    container_name: adminer
-    build:
-      context: ./adminer
-    restart: always
-    ports:
-      - "${ADMINER_PORT}:8080"
-    networks:
-      - frontend
-      - backend
-
   ghost:
     container_name: ghost
     build:
@@ -186,6 +162,45 @@ services:
       - database__connection__user=${GHOST_DATABASE_CONNECTION_USER}
       - database__connection__password=${GHOST_DATABASE_CONNECTION_PASSWORD}
       - database__connection__database=${GHOST_DATABASE_CONNECTION_DATABASE}
+    networks:
+      - frontend
+      - backend
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    build:
+      context: ./phpmyadmin
+    restart: always
+    ports:
+      - "${PMA_PORT}:80"
+    environment:
+      - PMA_ARBITRARY=${PMA_ARBITRARY}
+    networks:
+      - frontend
+      - backend
+
+  phpredisadmin:
+    container_name: phpredisadmin
+    build:
+      context: ./phpredisadmin
+    restart: always
+    depends_on:
+      - redis
+    ports:
+      - "${PRA_PORT}:80"
+    environment:
+      - REDIS_1_HOST=${PRA_REDIS_1_HOST}
+    networks:
+      - frontend
+      - backend
+
+  adminer:
+    container_name: adminer
+    build:
+      context: ./adminer
+    restart: always
+    ports:
+      - "${ADMINER_PORT}:8080"
     networks:
       - frontend
       - backend

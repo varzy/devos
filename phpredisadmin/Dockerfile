@@ -1,3 +1,4 @@
-FROM postgres:alpine
+FROM erikdubbelboer/phpredisadmin
 
 LABEL maintainer="varzy <varzy@live.com>"
+
