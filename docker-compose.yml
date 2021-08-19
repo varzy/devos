@@ -5,6 +5,9 @@ networks:
   backend:
 
 services:
+  ### ============================================
+  ### Workspace
+  ### ============================================
   workspace:
     container_name: workspace
     build:
