@@ -10,3 +10,9 @@ _sites/*
 !_sites/index.html
 !_sites/test
 !_sites/50x.html
+
+# 保留 webserver 默认配置
+nginx/conf.d/*
+!nginx/conf.d/default.conf
+!nginx/conf.d/test.conf
+caddy/Caddyfile
