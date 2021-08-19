@@ -70,11 +70,11 @@ services:
     restart: always
     ports:
       - "3306:3306"
-    environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - TZ=${TZ}
     volumes:
       - ${DATA_PATH}/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      TZ: ${TZ}
     networks:
       - backend
 
@@ -95,14 +95,14 @@ services:
     build:
       context: ./mongo
     restart: always
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     ports:
       - "27017:27017"
     volumes:
       - ${DATA_PATH}/mongo/data:/data/db
       - ${DATA_PATH}/mongo/config:/data/configdb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
     networks:
       - backend
 
@@ -116,15 +116,15 @@ services:
     restart: always
     depends_on:
       - mysql
-    environment:
-      - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
-      - WORDPRESS_DB_USER=${WORDPRESS_DB_USER}
-      - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
-      - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME}
     ports:
       - "7101:80"
     volumes:
       - ${DATA_PATH}/wordpress:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
+      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
+      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
+      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
     networks:
       - frontend
       - backend
@@ -134,10 +134,10 @@ services:
     build:
       context: ./phpmyadmin
     restart: always
-    environment:
-      - PMA_ARBITRARY=${PMA_ARBITRARY}
     ports:
       - "7102:80"
+    environment:
+      PMA_ARBITRARY: ${PMA_ARBITRARY}
     networks:
       - frontend
       - backend
@@ -149,6 +149,28 @@ services:
     restart: always
     ports:
       - "7103:8080"
+    networks:
+      - frontend
+      - backend
+
+  ghost:
+    container_name: ghost
+    build:
+      context: ./ghost
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - "7104:2368"
+    volumes:
+      - ${DATA_PATH}/ghost:/var/lib/ghost/content
+    environment:
+      url: http://localhost:7104
+      database__client: ${GHOST_DATABASE_CLIENT}
+      database__connection__host: ${GHOST_DATABASE_CONNECTION_HOST}
+      database__connection__user: ${GHOST_DATABASE_CONNECTION_USER}
+      database__connection__password: ${GHOST_DATABASE_CONNECTION_PASSWORD}
+      database__connection__database: ${GHOST_DATABASE_CONNECTION_DATABASE}
     networks:
       - frontend
       - backend
