@@ -73,8 +73,8 @@ services:
     volumes:
       - ${DATA_PATH}/mysql:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      TZ: ${TZ}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - TZ=${TZ}
     networks:
       - backend
 
@@ -101,8 +101,8 @@ services:
       - ${DATA_PATH}/mongo/data:/data/db
       - ${DATA_PATH}/mongo/config:/data/configdb
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
     networks:
       - backend
 
@@ -117,14 +117,14 @@ services:
     depends_on:
       - mysql
     ports:
-      - "7101:80"
+      - "7001:80"
     volumes:
       - ${DATA_PATH}/wordpress:/var/www/html
     environment:
-      WORDPRESS_DB_HOST: ${WORDPRESS_DB_HOST}
-      WORDPRESS_DB_USER: ${WORDPRESS_DB_USER}
-      WORDPRESS_DB_PASSWORD: ${WORDPRESS_DB_PASSWORD}
-      WORDPRESS_DB_NAME: ${WORDPRESS_DB_NAME}
+      - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
+      - WORDPRESS_DB_USER=${WORDPRESS_DB_USER}
+      - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
+      - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME}
     networks:
       - frontend
       - backend
@@ -135,9 +135,9 @@ services:
       context: ./phpmyadmin
     restart: always
     ports:
-      - "7102:80"
+      - "7002:80"
     environment:
-      PMA_ARBITRARY: ${PMA_ARBITRARY}
+      - PMA_ARBITRARY=${PMA_ARBITRARY}
     networks:
       - frontend
       - backend
@@ -148,7 +148,7 @@ services:
       context: ./adminer
     restart: always
     ports:
-      - "7103:8080"
+      - "7003:8080"
     networks:
       - frontend
       - backend
@@ -161,16 +161,34 @@ services:
     depends_on:
       - mysql
     ports:
-      - "7104:2368"
+      - "7004:2368"
     volumes:
       - ${DATA_PATH}/ghost:/var/lib/ghost/content
     environment:
-      url: http://localhost:7104
-      database__client: ${GHOST_DATABASE_CLIENT}
-      database__connection__host: ${GHOST_DATABASE_CONNECTION_HOST}
-      database__connection__user: ${GHOST_DATABASE_CONNECTION_USER}
-      database__connection__password: ${GHOST_DATABASE_CONNECTION_PASSWORD}
-      database__connection__database: ${GHOST_DATABASE_CONNECTION_DATABASE}
+      - url=http://localhost:7004
+      - database__client=${GHOST_DATABASE_CLIENT}
+      - database__connection__host=${GHOST_DATABASE_CONNECTION_HOST}
+      - database__connection__user=${GHOST_DATABASE_CONNECTION_USER}
+      - database__connection__password=${GHOST_DATABASE_CONNECTION_PASSWORD}
+      - database__connection__database=${GHOST_DATABASE_CONNECTION_DATABASE}
+    networks:
+      - frontend
+      - backend
+
+  mongo-express:
+    container_name: mongo-express
+    build:
+      context: ./mongo-express
+    restart: always
+    depends_on:
+      - mongo
+    ports:
+      - "7005:8081"
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_OPTIONS_EDITORTHEME=${ME_CONFIG_OPTIONS_EDITORTHEME}
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${ME_CONFIG_MONGODB_ADMINUSERNAME}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${ME_CONFIG_MONGODB_ADMINPASSWORD}
     networks:
       - frontend
       - backend
