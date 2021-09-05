@@ -10,10 +10,14 @@ services:
       context: ./workspace
     tty: true
     volumes:
-      # host file first
-      - ${CODE_PATH}:/var/workspace/cached:cached
-      # container file first
-      - ${DATA_PATH}/workspace:/var/workspace/delegated:delegated
+      # 默认模式，主机和容器文件完全一致
+      - ${CODE_PATH}/sync:/workspace/sync:default
+      # host file first. 在主机端编写代码时使用的目录
+      - ${CODE_PATH}/external:/workspace/external:cached
+      # container file first. 在容器端编写代码时使用此目录
+      - ${CODE_PATH}/internal:/workspace/internal:delegated
+      # 容器端需要进行存储的文件
+      - ${DATA_PATH}/workspace:/workspace/storage
     ports:
       - "${WORKSPACE_SSH_PORT}:22"
       - "${WORKSPACE_PORTS}:8000-8100"
