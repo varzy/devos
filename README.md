@@ -10,6 +10,9 @@ cp .env.example .env
 
 # 启动自己需要的容器
 docker compose up -d caddy mysql redis
+
+# 将 workspace 提交为新镜像
+docker commit -a "zy" -m "add node" 38f31d477821 devos_workspace:v1
 ```
 
 ## 常用命令
