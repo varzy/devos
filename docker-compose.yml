@@ -140,7 +140,7 @@ services:
     volumes:
       - ${DATA_PATH}/ghost:/var/lib/ghost/content
     environment:
-      - url=http://localhost:7004
+      - url=http://localhost:${GHOST_PORT}
       - database__client=${GHOST_DATABASE_CLIENT}
       - database__connection__host=${GHOST_DATABASE_CONNECTION_HOST}
       - database__connection__user=${GHOST_DATABASE_CONNECTION_USER}
@@ -191,3 +191,14 @@ services:
       - ME_CONFIG_OPTIONS_EDITORTHEME=${ME_CONFIG_OPTIONS_EDITORTHEME}
       - ME_CONFIG_MONGODB_ADMINUSERNAME=${ME_CONFIG_MONGODB_ADMINUSERNAME}
       - ME_CONFIG_MONGODB_ADMINPASSWORD=${ME_CONFIG_MONGODB_ADMINPASSWORD}
+
+  jenkins:
+    container_name: jenkins
+    build:
+      context: ./jenkins
+    restart: always
+    ports:
+      - "${JENKINS_PORT_1}:8080"
+      - "${JENKINS_PORT_2}:50000"
+    volumes:
+      - ${DATA_PATH}/jenkins:/var/jenkins_home
