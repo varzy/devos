@@ -202,3 +202,33 @@ services:
       - "${JENKINS_PORT_2}:50000"
     volumes:
       - ${DATA_PATH}/jenkins:/var/jenkins_home
+
+  monica:
+    container_name: monica
+    build:
+      context: ./monica
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - "${MONICA_PORT}:80"
+    environment:
+      - DB_HOST=${MONICA_DB_HOST}
+      - DB_USERNAME=${MONICA_DB_USERNAME}
+      - DB_PASSWORD=${MONICA_DB_PASSWORD}
+    volumes:
+      - ${DATA_PATH}/monica:/var/www/html/storage
+
+  gitlab:
+    container_name: gitlab
+    build:
+      context: ./gitlab
+    restart: always
+    ports:
+      - '80:80'
+      - '443:443'
+      - '22:22'
+    volumes:
+      - '${DATA_PATH}/gitlab/config:/etc/gitlab'
+      - '${DATA_PATH}/gitlab/logs:/var/log/gitlab'
+      - '${DATA_PATH}/gitlab/data:/var/opt/gitlab'
