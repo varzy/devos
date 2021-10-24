@@ -198,8 +198,8 @@ services:
       context: ./jenkins
     restart: always
     ports:
-      - "${JENKINS_PORT_1}:8080"
-      - "${JENKINS_PORT_2}:50000"
+      - "${JENKINS_PORT_8080}:8080"
+      - "${JENKINS_PORT_50000}:50000"
     volumes:
       - ${DATA_PATH}/jenkins:/var/jenkins_home
 
@@ -225,10 +225,22 @@ services:
       context: ./gitlab
     restart: always
     ports:
-      - '80:80'
-      - '443:443'
-      - '22:22'
+      - '${GITLAB_PORT_HTTP}:80'
+      - '${GITLAB_PORT_HTTPS}:443'
+      - '${GITLAB_PORT_SSH}:22'
     volumes:
-      - '${DATA_PATH}/gitlab/config:/etc/gitlab'
-      - '${DATA_PATH}/gitlab/logs:/var/log/gitlab'
-      - '${DATA_PATH}/gitlab/data:/var/opt/gitlab'
+      - ${DATA_PATH}/gitlab/config:/etc/gitlab
+      - ${DATA_PATH}/gitlab/logs:/var/log/gitlab
+      - ${DATA_PATH}/gitlab/data:/var/opt/gitlab
+
+  portainer:
+    container_name: portainer
+    build:
+      context: ./portainer
+    restart: always
+    ports:
+      - "${PORTAINER_PORT_HTTP}:8000"
+      - "${PORTAINER_PORT_HTTPS}:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${DATA_PATH}/portainer:/data
