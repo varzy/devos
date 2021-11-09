@@ -244,3 +244,22 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ${DATA_PATH}/portainer:/data
+
+  nextcloud:
+    container_name: nextcloud
+    build:
+      context: ./nextcloud
+    restart: always
+    depends_on:
+      - mysql
+    links:
+      - mysql
+    ports:
+      - "${NEXTCLOUD_PORT}:80"
+    volumes:
+      - ${DATA_PATH}/nextcloud:/var/www/html
+    environment:
+      - MYSQL_HOST=${NEXTCLOUD_MYSQL_HOST}
+      - MYSQL_DATABASE=${NEXTCLOUD_MYSQL_DATABASE}
+      - MYSQL_USER=${NEXTCLOUD_MYSQL_USER}
+      - MYSQL_PASSWORD=${NEXTCLOUD_MYSQL_PASSWORD}
