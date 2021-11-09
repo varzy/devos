@@ -263,3 +263,33 @@ services:
       - MYSQL_DATABASE=${NEXTCLOUD_MYSQL_DATABASE}
       - MYSQL_USER=${NEXTCLOUD_MYSQL_USER}
       - MYSQL_PASSWORD=${NEXTCLOUD_MYSQL_PASSWORD}
+
+  elasticsearch:
+    container_name: elasticsearch
+    build:
+      context: ./elasticsearch
+    restart: always
+    ports:
+      - "${ELASTICSEARCH_PORT_HTTP}:9200"
+      - "${ELASTICSEARCH_PORT_TCP}:9300"
+    volumes:
+      - ${DATA_PATH}/elasticsearch:/usr/share/elasticsearch/data
+    environment:
+      - discovery.type=single-node
+
+  kibana:
+    container_name: kibana
+    build:
+      context: ./kibana
+    restart: always
+    depends_on:
+      - elasticsearch
+    links:
+      - elasticsearch
+    ports:
+      - "${KIBANA_PORT}:5601"
+    volumes:
+      # - ${DATA_PATH}/kibana/config/kibana.yml:/usr/share/kibana/config/kibana.yml
+      - ${DATA_PATH}/kibana/data:/usr/share/kibana/data
+    environment:
+      - ELASTICSEARCH_HOSTS=${KIBANA_ELASTICSEARCH_HOSTS}
