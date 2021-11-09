@@ -293,3 +293,21 @@ services:
       - ${DATA_PATH}/kibana/data:/usr/share/kibana/data
     environment:
       - ELASTICSEARCH_HOSTS=${KIBANA_ELASTICSEARCH_HOSTS}
+
+  redmine:
+    container_name: redmine
+    build:
+      context: ./redmine
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - "${REDMINE_PORT}:3000"
+    volumes:
+      - ${DATA_PATH}/redmine:/usr/src/redmine/files
+    environment:
+      - REDMINE_DB_MYSQL=${REDMINE_DB_MYSQL}
+      - REDMINE_DB_PORT=${REDMINE_DB_PORT}
+      - REDMINE_DB_DATABASE=${REDMINE_DB_DATABASE}
+      - REDMINE_DB_USERNAME=${REDMINE_DB_USERNAME}
+      - REDMINE_DB_PASSWORD=${REDMINE_DB_PASSWORD}
