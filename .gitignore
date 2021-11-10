@@ -12,3 +12,5 @@ nginx/conf.d/*
 !nginx/conf.d/default.conf
 !nginx/conf.d/app.conf.example
 caddy/Caddyfile
+
+phpredisadmin/config.inc.php
