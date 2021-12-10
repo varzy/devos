@@ -19,8 +19,8 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 ########################################
 # Lang
 ########################################
-RUN apt install -y locales && \
-    localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
+RUN apt install -y locales \
+    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 ENV LANG en_US.utf8
 
 ########################################
@@ -31,15 +31,15 @@ RUN apt install -y curl git vim software-properties-common
 ########################################
 # Node, Npm, Yarn
 ########################################
-RUN apt install npm -y && \
-    npm config set registry https://registry.npm.taobao.org && \
-    npm install -g npm && \
-    npm install -g n && \
-    n stable
-RUN npm install -g yarn && \
-    yarn config set registry https://registry.npm.taobao.org && \
-    echo 'export PATH="$HOME/.yarn/bin:$PATH"' >> ~/.bashrc && \
-    yarn global add @vue/cli prettier eslint serve
+RUN apt install npm -y \
+    && npm config set registry https://registry.npm.taobao.org \
+    && npm install -g npm \
+    && npm install -g n \
+    && n stable
+RUN npm install -g yarn \
+    && yarn config set registry https://registry.npm.taobao.org \
+    && echo 'export PATH="$HOME/.yarn/bin:$PATH"' >> ~/.bashrc \
+    && yarn global add @vue/cli prettier eslint serve
 
 ########################################
 # GO
@@ -52,9 +52,9 @@ RUN go clean --modcache
 # Final
 ########################################
 # Clean up
-RUN apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-    rm /var/log/lastlog /var/log/faillog
+RUN apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && rm /var/log/lastlog /var/log/faillog
 
 EXPOSE 22 8000-8100
 WORKDIR /workspace
