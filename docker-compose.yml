@@ -21,7 +21,7 @@ services:
       - ${DATA_PATH}/workspace:/workspace/storage
     ports:
       - "${WORKSPACE_SSH_PORT}:22"
-      - "${WORKSPACE_PORTS}:8000-8100"
+      - "8000-8099:8000-8099"
 
   ### ============================================
   ### Web Servers
@@ -109,44 +109,8 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
 
   ### ============================================
-  ### Applications
+  ### Database Managers
   ### ============================================
-  wordpress:
-    container_name: wordpress
-    build:
-      context: ./wordpress
-    restart: always
-    depends_on:
-      - mysql
-    ports:
-      - "${WORDPRESS_PORT}:80"
-    volumes:
-      - ${DATA_PATH}/wordpress:/var/www/html
-    environment:
-      - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
-      - WORDPRESS_DB_USER=${WORDPRESS_DB_USER}
-      - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
-      - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME}
-
-  ghost:
-    container_name: ghost
-    build:
-      context: ./ghost
-    restart: always
-    depends_on:
-      - mysql
-    ports:
-      - "${GHOST_PORT}:2368"
-    volumes:
-      - ${DATA_PATH}/ghost:/var/lib/ghost/content
-    environment:
-      - url=http://localhost:${GHOST_PORT}
-      - database__client=${GHOST_DATABASE_CLIENT}
-      - database__connection__host=${GHOST_DATABASE_CONNECTION_HOST}
-      - database__connection__user=${GHOST_DATABASE_CONNECTION_USER}
-      - database__connection__password=${GHOST_DATABASE_CONNECTION_PASSWORD}
-      - database__connection__database=${GHOST_DATABASE_CONNECTION_DATABASE}
-
   phpmyadmin:
     container_name: phpmyadmin
     build:
@@ -193,6 +157,57 @@ services:
       - ME_CONFIG_OPTIONS_EDITORTHEME=${ME_CONFIG_OPTIONS_EDITORTHEME}
       - ME_CONFIG_MONGODB_ADMINUSERNAME=${ME_CONFIG_MONGODB_ADMINUSERNAME}
       - ME_CONFIG_MONGODB_ADMINPASSWORD=${ME_CONFIG_MONGODB_ADMINPASSWORD}
+
+  pgadmin:
+    container_name: pgadmin
+    build:
+      context: ./pgadmin
+    depends_on:
+      - postgres
+    ports:
+      - "${PGA_PORT}:80"
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+      - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+
+  ### ============================================
+  ### Applications
+  ### ============================================
+  wordpress:
+    container_name: wordpress
+    build:
+      context: ./wordpress
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - "${WORDPRESS_PORT}:80"
+    volumes:
+      - ${DATA_PATH}/wordpress:/var/www/html
+    environment:
+      - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
+      - WORDPRESS_DB_USER=${WORDPRESS_DB_USER}
+      - WORDPRESS_DB_PASSWORD=${WORDPRESS_DB_PASSWORD}
+      - WORDPRESS_DB_NAME=${WORDPRESS_DB_NAME}
+
+  ghost:
+    container_name: ghost
+    build:
+      context: ./ghost
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - "${GHOST_PORT}:2368"
+    volumes:
+      - ${DATA_PATH}/ghost:/var/lib/ghost/content
+    environment:
+      - url=http://localhost:${GHOST_PORT}
+      - database__client=${GHOST_DATABASE_CLIENT}
+      - database__connection__host=${GHOST_DATABASE_CONNECTION_HOST}
+      - database__connection__user=${GHOST_DATABASE_CONNECTION_USER}
+      - database__connection__password=${GHOST_DATABASE_CONNECTION_PASSWORD}
+      - database__connection__database=${GHOST_DATABASE_CONNECTION_DATABASE}
 
   jenkins:
     container_name: jenkins
@@ -313,3 +328,21 @@ services:
       - REDMINE_DB_DATABASE=${REDMINE_DB_DATABASE}
       - REDMINE_DB_USERNAME=${REDMINE_DB_USERNAME}
       - REDMINE_DB_PASSWORD=${REDMINE_DB_PASSWORD}
+
+  sonarqube:
+    container_name: sonarqube
+    build:
+      context: ./sonarqube
+    restart: always
+    depends_on:
+      - postgres
+    ports:
+      - "${SONARQUBE_PORT}:9000"
+    environment:
+      - SONAR_JDBC_URL=${SONARQUBE_JDBC_URL}
+      - SONAR_JDBC_USERNAME=${SONARQUBE_JDBC_USERNAME}
+      - SONAR_JDBC_PASSWORD=${SONARQUBE_JDBC_PASSWORD}
+    volumes:
+      - ${DATA_PATH}/sonarqube/data:/opt/sonarqube/data
+      - ${DATA_PATH}/sonarqube/extensions:/opt/sonarqube/extensions
+      - ${DATA_PATH}/sonarqube/logs:/opt/sonarqube/logs
