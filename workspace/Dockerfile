@@ -56,5 +56,5 @@ RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && rm /var/log/lastlog /var/log/faillog
 
-EXPOSE 22 8000-8100
+EXPOSE 22 8000-8099
 WORKDIR /workspace
