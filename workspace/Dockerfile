@@ -82,3 +82,6 @@ RUN apt install python3-pip -y
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     rm /var/log/lastlog /var/log/faillog
+
+WORKDIR /workspace
+EXPOSE 22 8000-8999
