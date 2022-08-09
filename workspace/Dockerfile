@@ -84,4 +84,5 @@ RUN apt-get clean && \
     rm /var/log/lastlog /var/log/faillog
 
 WORKDIR /workspace
+
 EXPOSE 22 8000-8999
