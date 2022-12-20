@@ -23,7 +23,7 @@ services:
       - ${DATA_PATH}/workspace:/workspace/storage
     ports:
       - "${WORKSPACE_SSH_PORT}:22"
-      - "8000-8099:8000-8099"
+      - "8000-8100:8000-8100"
     environment:
       - TZ=${TZ}
 
