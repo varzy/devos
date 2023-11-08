@@ -1,15 +1,17 @@
-FROM ubuntu:20.04
-
+FROM ubuntu:22.04
 LABEL maintainer="varzy <varzy@live.com>"
 
-ARG AT_CHINESE_MAINLAND=false
+ARG AT_CHINA=false
 ARG TZ=UTC
 ENV TZ ${TZ}
+ENV DEBIAN_FRONTEND noninteractive
+
+USER root
 
 ########################################
 # Source
 ########################################
-RUN if [ ${AT_CHINESE_MAINLAND} = true ]; then \
+RUN if [ ${AT_CHINA} = true ]; then \
       cp /etc/apt/sources.list /etc/apt/sources.list.bak && \
       sed -i 's/archive.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list \
     ;fi
@@ -30,7 +32,7 @@ ENV LANG en_US.utf8
 ########################################
 # Basic packages
 ########################################
-RUN apt install -y curl git vim software-properties-common
+RUN apt install -y curl wget git vim software-properties-common
 
 ########################################
 # Node
@@ -40,49 +42,43 @@ ARG NVM_DIR=/root/.nvm
 # NVM & Node
 RUN mkdir -p $NVM_DIR && \
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash && \
-    echo 'export NVM_DIR="$NVM_DIR"' >> ~/.bashrc && \
-    echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> ~/.bashrc && \
     . $NVM_DIR/nvm.sh && \
-    if [ ${AT_CHINESE_MAINLAND} ]; then \
+    if [ ${AT_CHINA} ]; then \
       echo "" >> ~/.bashrc && \
       echo 'export NVM_NODEJS_ORG_MIRROR="https://npm.taobao.org/mirrors/node"' >> ~/.bashrc \
     ;fi && \
-    nvm install node
-# Npm & Yarn
+    nvm install --lts
+
+# Npm
 RUN [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && \
-    if [ ${AT_CHINESE_MAINLAND} ]; then \
+    if [ ${AT_CHINA} ]; then \
       npm config set registry https://registry.npm.taobao.org \
     ;fi && \
-    npm install -g yarn && \
-    if [ ${AT_CHINESE_MAINLAND} ]; then \
-      yarn config set registry https://registry.npm.taobao.org \
-    ;fi && \
-    echo "" >> ~/.bashrc && \
-    echo 'export PATH="$HOME/.yarn/bin:$PATH"' >> ~/.bashrc && \
-    yarn global add @vue/cli prettier eslint serve
+    npm install -g yarn pnpm
 
 ########################################
 # GO
 ########################################
-RUN apt install golang-go -y && \
-    if [ ${AT_CHINESE_MAINLAND} ]; then \
-      go env -w GOPROXY=https://goproxy.cn,https://gocenter.io,https://goproxy.io,direct \
-    ;fi && \
-    go clean --modcache
+RUN add-apt-repository ppa:longsleep/golang-backports && \
+    apt update && \
+    apt install -y golang-go
 
 ########################################
-# Python
+# Java
 ########################################
-RUN apt install python3-pip -y
+RUN apt install -y wget apt-transport-https
+RUN mkdir -p /etc/apt/keyrings && \
+    wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc
+RUN echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list && \
+    apt update && \
+    apt install -y temurin-17-jdk
 
-########################################
-# Final
 ########################################
 # Clean up
+########################################
 RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     rm /var/log/lastlog /var/log/faillog
 
+USER root
 WORKDIR /workspace
-
-EXPOSE 22 8000-8999

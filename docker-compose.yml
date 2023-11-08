@@ -8,22 +8,22 @@ services:
     container_name: workspace
     build:
       context: ./workspace
+      dockerfile: Dockerfile
       args:
-        - AT_CHINESE_MAINLAND=${AT_CHINESE_MAINLAND}
+        - AT_CHINA=${AT_CHINA}
     stdin_open: true  # docker run -i
     tty: true  #docker run -t
     volumes:
       # 默认模式，主机和容器文件完全一致
-      - ${CODE_PATH}/sync:/workspace/sync:default
-      # host file first. 在主机端编写代码时使用的目录
-      - ${CODE_PATH}/external:/workspace/external:cached
-      # container file first. 在容器端编写代码时使用此目录
-      - ${CODE_PATH}/internal:/workspace/internal:delegated
+      - ${CODE_PATH}:/workspace
       # 容器端需要进行存储的文件
-      - ${DATA_PATH}/workspace:/workspace/storage
+      # - ${DATA_PATH}/workspace:/workspace/storage
+      # Host files first. 在主机端编写代码时使用此目录
+      # - ${CODE_PATH}/external:/workspace/external:cached
+      # Container files first. 在容器端编写代码时使用此目录
+      # - ${CODE_PATH}/internal:/workspace/internal:delegated
     ports:
       - "${WORKSPACE_SSH_PORT}:22"
-      - "8000-8100:8000-8100"
     environment:
       - TZ=${TZ}
 
