@@ -50,11 +50,15 @@ RUN mkdir -p $NVM_DIR && \
     nvm install --lts
 
 # Npm
-RUN [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && \
+RUN . "$NVM_DIR/nvm.sh" && \
     if [ ${AT_CHINA} ]; then \
       npm config set registry https://registry.npm.taobao.org \
     ;fi && \
     npm install -g yarn pnpm
+
+# Pnpm
+RUN . "$NVM_DIR/nvm.sh" && \
+    pnpm config set store-dir /root/.pnpm-store
 
 ########################################
 # GO
@@ -62,6 +66,11 @@ RUN [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh" && \
 RUN add-apt-repository ppa:longsleep/golang-backports && \
     apt update && \
     apt install -y golang-go
+
+########################################
+# Python
+########################################
+RUN apt install -y python3-pip python3-venv
 
 ########################################
 # Java
