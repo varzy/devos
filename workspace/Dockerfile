@@ -89,10 +89,12 @@ RUN if [ ${WORKSPACE_INSTALL_YARN} = true ]; then \
 ########################################
 
 ARG WORKSPACE_INSTALL_PNPM
+ARG PNPM_STORE_DIR=/root/.pnpm-store
 
 RUN if [ ${WORKSPACE_INSTALL_PNPM} = true ]; then \
   . $NVM_DIR/nvm.sh && \
-  npm i -g pnpm \
+  npm i -g pnpm && \
+  pnpm config set store-dir ${PNPM_STORE_DIR} \
 ;fi
 
 ########################################
@@ -118,9 +120,10 @@ RUN if [ ${WORKSPACE_INSTALL_JDK} = true ]; then \
 ARG WORKSPACE_INSTALL_PYTHON
 
 RUN if [ ${WORKSPACE_INSTALL_PYTHON} = true ]; then \
-  apt-get install -yqq python3 python3-pip python3-venv \
+  apt-get install -yqq python3 python3-pip python3-venv && \
   echo "" >> ~/.bashrc && \
-  echo 'alias python="/usr/bin/python3"' >> ~/.bashrc \
+  echo 'alias python="/usr/bin/python3"' >> ~/.bashrc && \
+  echo 'alias pip="/usr/bin/pip3"' >> ~/.bashrc \
 ;fi
 
 ########################################
