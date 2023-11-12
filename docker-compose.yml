@@ -11,17 +11,26 @@ services:
       dockerfile: Dockerfile
       args:
         - AT_CHINA=${AT_CHINA}
+        - WORKSPACE_INSTALL_NODE=${WORKSPACE_INSTALL_NODE}
+        - WORKSPACE_NODE_VERSION=${WORKSPACE_NODE_VERSION}
+        - WORKSPACE_INSTALL_YARN=${WORKSPACE_INSTALL_YARN}
+        - WORKSPACE_INSTALL_PNPM=${WORKSPACE_INSTALL_PNPM}
+        - WORKSPACE_INSTALL_JDK=${WORKSPACE_INSTALL_JDK}
+        - WORKSPACE_JDK_VERSION=${WORKSPACE_JDK_VERSION}
+        - WORKSPACE_INSTALL_PYTHON=${WORKSPACE_INSTALL_PYTHON}
+        - WORKSPACE_PYTHON_VERSION=${WORKSPACE_PYTHON_VERSION}
+        - WORKSPACE_INSTALL_GO=${WORKSPACE_INSTALL_GO}
+        - WORKSPACE_INSTALL_RUST=${WORKSPACE_INSTALL_RUST}
+        - WORKSPACE_INSTALL_FFMPEG=${WORKSPACE_INSTALL_FFMPEG}
     stdin_open: true  # docker run -i
     tty: true  #docker run -t
     volumes:
       # 默认模式，主机和容器文件完全一致
-      - ${CODE_PATH}:/workspace
-      # 容器端需要进行存储的文件
-      # - ${DATA_PATH}/workspace:/workspace/storage
+      - ${CODE_PATH}/sync:/workspace/sync
       # Host files first. 在主机端编写代码时使用此目录
-      # - ${CODE_PATH}/external:/workspace/external:cached
+      - ${CODE_PATH}/external:/workspace/external:cached
       # Container files first. 在容器端编写代码时使用此目录
-      # - ${CODE_PATH}/internal:/workspace/internal:delegated
+      - ${CODE_PATH}/internal:/workspace/internal:delegated
     ports:
       - "${WORKSPACE_SSH_PORT}:22"
     environment:
