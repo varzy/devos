@@ -30,6 +30,8 @@ services:
       - ${CODE_PATH}/external:/workspace/external:cached
       # Container files first. 在容器端编写代码时使用此目录
       - ${CODE_PATH}/internal:/workspace/internal:delegated
+      # Workspace Data.
+      - ${DATA_PATH}/workspace:/workspace/data
     ports:
       - "${WORKSPACE_SSH_PORT}:22"
     environment:

@@ -64,13 +64,6 @@ RUN if [ ${WORKSPACE_INSTALL_NODE} = true ]; then \
   nvm install ${WORKSPACE_NODE_VERSION} \
 ;fi
 
-# Source NVM
-RUN if [ ${WORKSPACE_INSTALL_NODE} = true ]; then \
-  echo "" >> ~/.bashrc && \
-  echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.bashrc && \
-  echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> ~/.bashrc \
-;fi
-
 ########################################
 # Yarn
 ########################################
@@ -89,12 +82,12 @@ RUN if [ ${WORKSPACE_INSTALL_YARN} = true ]; then \
 ########################################
 
 ARG WORKSPACE_INSTALL_PNPM
-ARG PNPM_STORE_DIR=/root/.pnpm-store
+ARG PNPM_STORE_DIR=
 
 RUN if [ ${WORKSPACE_INSTALL_PNPM} = true ]; then \
   . $NVM_DIR/nvm.sh && \
   npm i -g pnpm && \
-  pnpm config set store-dir ${PNPM_STORE_DIR} \
+  pnpm config set store-dir /workspace/data/.pnpm-store \
 ;fi
 
 ########################################
@@ -130,8 +123,7 @@ ARG WORKSPACE_INSTALL_RUST
 
 RUN if [ ${WORKSPACE_INSTALL_RUST} = true ]; then \
   curl https://sh.rustup.rs -sSf | bash -s -- -y && \
-  echo "" >> ~/.bashrc && \
-  echo 'source $HOME/.cargo/env' >> $HOME/.bashrc \
+  echo "" >> ~/.bashrc \
 ;fi
 
 ########################################
