@@ -98,22 +98,6 @@ RUN if [ ${WORKSPACE_INSTALL_PNPM} = true ]; then \
 ;fi
 
 ########################################
-# JDK
-########################################
-
-ARG WORKSPACE_INSTALL_JDK
-ARG WORKSPACE_JDK_VERSION=17
-
-RUN if [ ${WORKSPACE_INSTALL_JDK} = true ]; then \
-  apt-get install -yqq wget apt-transport-https && \
-  mkdir -p /etc/apt/keyrings && \
-  wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc && \
-  echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list && \
-  apt-get update && \
-  apt-get install -yqq temurin-${WORKSPACE_JDK_VERSION}-jdk \
-;fi
-
-########################################
 # Python
 ########################################
 
@@ -148,6 +132,22 @@ RUN if [ ${WORKSPACE_INSTALL_RUST} = true ]; then \
   curl https://sh.rustup.rs -sSf | bash -s -- -y && \
   echo "" >> ~/.bashrc && \
   echo 'source $HOME/.cargo/env' >> $HOME/.bashrc \
+;fi
+
+########################################
+# JDK
+########################################
+
+ARG WORKSPACE_INSTALL_JDK
+ARG WORKSPACE_JDK_VERSION=17
+
+RUN if [ ${WORKSPACE_INSTALL_JDK} = true ]; then \
+  apt-get install -yqq wget apt-transport-https && \
+  mkdir -p /etc/apt/keyrings && \
+  wget -O - https://packages.adoptium.net/artifactory/api/gpg/key/public | tee /etc/apt/keyrings/adoptium.asc && \
+  echo "deb [signed-by=/etc/apt/keyrings/adoptium.asc] https://packages.adoptium.net/artifactory/deb $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" | tee /etc/apt/sources.list.d/adoptium.list && \
+  apt-get update && \
+  apt-get install -yqq temurin-${WORKSPACE_JDK_VERSION}-jdk \
 ;fi
 
 ########################################
