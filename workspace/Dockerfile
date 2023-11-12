@@ -82,7 +82,6 @@ RUN if [ ${WORKSPACE_INSTALL_YARN} = true ]; then \
 ########################################
 
 ARG WORKSPACE_INSTALL_PNPM
-ARG PNPM_STORE_DIR=
 
 RUN if [ ${WORKSPACE_INSTALL_PNPM} = true ]; then \
   . $NVM_DIR/nvm.sh && \
