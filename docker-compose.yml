@@ -69,6 +69,18 @@ services:
       - ${DATA_PATH}/caddy/data:/data
       - ${DATA_PATH}/caddy/logs:/var/log/caddy
 
+  traefik:
+    container_name: traefik
+    build:
+      context: ./traefik
+    restart: always
+    command: --api.insecure=true --providers.docker
+    ports:
+      - ${TRAEFIK_HTTP_PORT}:80
+      - ${TRAEFIK_WEBUI_PORT}:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
   ### ============================================
   ### Databases
   ### ============================================
